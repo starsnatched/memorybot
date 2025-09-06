@@ -1,4 +1,4 @@
-from typing import List, Literal
+from typing import List, Literal, Optional
 from pydantic import BaseModel, Field, ValidationError, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -18,6 +18,13 @@ class Settings(BaseSettings):
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     log_format: str | None = None
     log_datefmt: str | None = None
+
+    openai_api_key: Optional[str] = Field(default=None, validation_alias="OPENAI_API_KEY")
+    openai_base_url: Optional[str] = Field(default=None, validation_alias="OPENAI_BASE_URL")
+    openai_api_base: Optional[str] = Field(default=None, validation_alias="OPENAI_API_BASE")
+    openai_model: str = Field(default="gpt-4o-2024-08-06", validation_alias="OPENAI_MODEL")
+
+    database_url: str = Field(default="sqlite+aiosqlite:///./memorybot.db", validation_alias="DATABASE_URL")
 
     @field_validator("owner_ids", mode="before")
     @classmethod

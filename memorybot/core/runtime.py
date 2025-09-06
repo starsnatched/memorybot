@@ -8,6 +8,8 @@ import sys
 from dotenv import load_dotenv
 
 from .config import Settings, load_settings
+from memorybot.db.session import init_engine, get_engine
+from memorybot.db.repository import ConversationRepository
 from .logging import configure_logging
 from .bot import MemoryBot
 
@@ -44,6 +46,9 @@ async def start_bot() -> None:
         os.getpid(),
         platform.platform(),
     )
+    await init_engine(settings.database_url)
+    repo = ConversationRepository()
+    await repo.create_all(get_engine())
     bot = MemoryBot(settings)
     _install_signal_handlers(bot)
     token = settings.token
