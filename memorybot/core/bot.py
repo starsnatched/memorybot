@@ -126,6 +126,10 @@ class MemoryBot(commands.Bot):
 
     async def on_guild_join(self, guild: discord.Guild) -> None:
         self.log.info("guild join id=%s name=%s members=%s", guild.id, guild.name, guild.member_count)
+        try:
+            await self.sync_app_commands(mode="global")
+        except Exception:
+            self.log.error("auto sync on guild join failed", exc_info=True)
 
     async def on_guild_remove(self, guild: discord.Guild) -> None:
         self.log.info("guild remove id=%s name=%s", guild.id, guild.name)
@@ -141,7 +145,7 @@ class MemoryBot(commands.Bot):
                 getattr(interaction.user, "id", None),
                 getattr(interaction.guild, "id", None),
             )
-            await super().on_interaction(interaction)
+            return
         finally:
             reset_request_id(token)
 

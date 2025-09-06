@@ -8,6 +8,9 @@ from discord import app_commands, Interaction
 from discord.ext import commands
 
 
+log = logging.getLogger("memorybot.cog.basic")
+
+
 class Basic(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -22,11 +25,12 @@ class Basic(commands.Cog):
         await interaction.followup.send(f"ws {hb:.0f}ms | rt {delta:.0f}ms", ephemeral=True)
         self.log.debug("ping ws=%.0f rt=%.0f", hb, delta)
 
-    @app_commands.context_menu(name="User ID")
-    async def user_id(self, interaction: Interaction, user: discord.User):
-        await interaction.response.send_message(str(user.id), ephemeral=True)
-        self.log.debug("user_id target=%s by=%s", user.id, interaction.user and interaction.user.id)
+@app_commands.context_menu(name="User ID")
+async def user_id(interaction: Interaction, user: discord.User):
+    await interaction.response.send_message(str(user.id), ephemeral=True)
+    log.debug("user_id target=%s by=%s", user.id, interaction.user and interaction.user.id)
 
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Basic(bot))
+    bot.tree.add_command(user_id)

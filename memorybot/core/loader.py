@@ -33,9 +33,9 @@ async def load_extensions(client, modules: Iterable[str]) -> Tuple[list[str], li
         log.debug("loading extension %s", m)
         try:
             if m in getattr(client, "extensions", {}):
-                client.reload_extension(m)
+                await client.reload_extension(m)
             else:
-                client.load_extension(m)
+                await client.load_extension(m)
             loaded.append(m)
             elapsed = (time.perf_counter() - start) * 1000
             log.debug("loaded extension %s in %.0fms", m, elapsed)
