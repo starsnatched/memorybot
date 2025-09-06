@@ -4,13 +4,20 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_prefix="DISCORD_", case_sensitive=False)
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_prefix="DISCORD_",
+        case_sensitive=False,
+        extra="ignore",
+    )
 
     token: str
     application_id: int | None = None
     owner_ids: List[int] = Field(default_factory=list)
     owner_id: int | None = None
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
+    log_format: str | None = None
+    log_datefmt: str | None = None
 
     @field_validator("owner_ids", mode="before")
     @classmethod
@@ -34,4 +41,17 @@ def load_settings() -> Settings:
     try:
         return Settings()
     except ValidationError as e:
-        raise SystemExit(2) from e
+        import sys
+        errs = e.errors()
+        missing = [".".join(str(x) for x in err.get("loc", [])) for err in errs if err.get("type") == "missing"]
+        if missing:
+            sys.stderr.write(
+                "Configuration missing: " + ", ".join(missing) + 
+                ". Set DISCORD_* environment variables or use a .env file.\n"
+            )
+        else:
+            details = "; ".join(
+                f"{'.'.join(str(x) for x in err.get('loc', []))}: {err.get('msg')}" for err in errs
+            )
+            sys.stderr.write("Invalid configuration: " + details + "\n")
+        raise SystemExit(2)

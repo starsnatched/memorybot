@@ -1,7 +1,7 @@
 [project]
 name = "memorybot"
 version = "0.1.0"
-description = "Modular Discord bot framework with cog autoloading and app command sync"
+description = "Discord chatbot with memory integration."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -13,6 +13,7 @@ dependencies = [
 
 [project.scripts]
 memorybot = "memorybot.main:run"
+bot = "memorybot.main:run"
 
 [tool.uv]
 dev-dependencies = []

@@ -26,7 +26,7 @@ def _install_signal_handlers(bot: MemoryBot) -> None:
 async def start_bot() -> None:
     load_dotenv()
     settings = load_settings()
-    configure_logging(settings.log_level)
+    configure_logging(settings.log_level, settings.log_format, settings.log_datefmt)
     log = logging.getLogger("startup")
     try:
         import discord as _discord
@@ -54,6 +54,9 @@ async def start_bot() -> None:
         await bot.start(token)
     except (asyncio.CancelledError, KeyboardInterrupt):
         pass
+    except Exception:
+        log.error("failed to start bot", exc_info=True)
+        raise SystemExit(1)
     finally:
         if not bot.is_closed():
             await bot.close()

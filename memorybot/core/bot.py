@@ -44,7 +44,7 @@ class MemoryBot(commands.Bot):
     async def on_ready(self) -> None:
         self.log.info("ready as %s (%s)", self.user, self.user and self.user.id)
         self.log.debug("guilds=%d latency_ms=%.0f", len(self.guilds), self.latency * 1000)
-        await self.change_presence(activity=discord.Game(name="/sync to update commands"))
+        return
 
     async def on_connect(self) -> None:
         self.log.debug("gateway connect")

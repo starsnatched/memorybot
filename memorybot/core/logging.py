@@ -53,18 +53,18 @@ def reset_request_id(token: contextvars.Token[str]) -> None:
     _request_id.reset(token)
 
 
-def configure_logging(level: str | int = "INFO") -> None:
+def configure_logging(level: str | int = "INFO", fmt: str | None = None, datefmt: str | None = None) -> None:
     log_level = level if isinstance(level, int) else getattr(logging, str(level).upper(), logging.INFO)
     root = logging.getLogger()
     for h in list(root.handlers):
         root.removeHandler(h)
     handler = logging.StreamHandler(sys.stdout)
-    fmt = os.getenv(
+    fmt_value = fmt or os.getenv(
         "LOG_FORMAT",
         "%(asctime)s | %(levelname)s | %(name)s | %(filename)s:%(lineno)d | %(request_id)s | %(message)s",
     )
-    datefmt = os.getenv("LOG_DATEFMT", "%Y-%m-%d %H:%M:%S")
-    formatter = RedactingFormatter(fmt=fmt, datefmt=datefmt)
+    datefmt_value = datefmt or os.getenv("LOG_DATEFMT", "%Y-%m-%d %H:%M:%S")
+    formatter = RedactingFormatter(fmt=fmt_value, datefmt=datefmt_value)
     handler.setFormatter(formatter)
     handler.addFilter(ContextFilter())
     root.addHandler(handler)
