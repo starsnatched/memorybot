@@ -13,11 +13,13 @@ dependencies = [
   "SQLAlchemy>=2.0.32",
   "aiosqlite>=0.20.0",
   "greenlet>=3.2.4",
+  "tavily-python>=0.3.1",
 ]
 
 [project.scripts]
 memorybot = "memorybot.main:run"
 bot = "memorybot.main:run"
+tavily-sample = "memorybot.scripts.tavily_sample:main"
 
 [tool.uv]
 dev-dependencies = []

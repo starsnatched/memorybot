@@ -26,6 +26,8 @@ class Settings(BaseSettings):
 
     database_url: str = Field(default="sqlite+aiosqlite:///./memorybot.db", validation_alias="DATABASE_URL")
 
+    tavily_api_key: Optional[str] = Field(default=None, validation_alias="TAVILY_API_KEY")
+
     @field_validator("owner_ids", mode="before")
     @classmethod
     def parse_csv_ints(cls, v):

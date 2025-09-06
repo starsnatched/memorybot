@@ -26,3 +26,17 @@ def session() -> AsyncSession:
         raise RuntimeError("database session maker is not initialized")
     return _session_maker()
 
+
+async def close_engine() -> None:
+    global _engine, _session_maker
+    eng = _engine
+    _session_maker = None
+    _engine = None
+    if eng is None:
+        return
+    dispose = getattr(eng, "dispose", None)
+    if dispose is None:
+        return
+    res = dispose()
+    if hasattr(res, "__await__"):
+        await res

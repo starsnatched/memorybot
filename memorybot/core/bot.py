@@ -151,3 +151,15 @@ class MemoryBot(commands.Bot):
 
     async def on_socket_event_type(self, event_type: str) -> None:
         self.log.debug("socket event type=%s", event_type)
+
+    async def close(self) -> None:  # type: ignore[override]
+        try:
+            names = list(self.cogs.keys())
+            for name in names:
+                try:
+                    self.remove_cog(name)
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        await super().close()

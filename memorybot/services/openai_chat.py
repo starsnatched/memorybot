@@ -41,7 +41,7 @@ class OpenAIChatService:
             for m in history:
                 r = m.get("role")
                 c = m.get("content")
-                if r in {"user", "assistant"} and c:
+                if r in {"user", "assistant", "tool"} and c:
                     msgs.append({"role": r, "content": c})
         msgs.append({"role": "user", "content": text})
         client = self._client_instance()
@@ -69,3 +69,17 @@ class OpenAIChatService:
     def _fallback_message(self, content: str):
         from memorybot.schemas.llm import ChatMessage
         return ChatMessage(content=content)
+
+    async def aclose(self) -> None:
+        client = self._client
+        self._client = None
+        if client is None:
+            return
+        close = getattr(client, "aclose", None)
+        if close is None:
+            close = getattr(client, "close", None)
+        if close is None:
+            return
+        res = close()
+        if hasattr(res, "__await__"):
+            await res

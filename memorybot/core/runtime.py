@@ -8,7 +8,7 @@ import sys
 from dotenv import load_dotenv
 
 from .config import Settings, load_settings
-from memorybot.db.session import init_engine, get_engine
+from memorybot.db.session import init_engine, get_engine, close_engine
 from memorybot.db.repository import ConversationRepository
 from .logging import configure_logging
 from .bot import MemoryBot
@@ -63,5 +63,11 @@ async def start_bot() -> None:
         log.error("failed to start bot", exc_info=True)
         raise SystemExit(1)
     finally:
-        if not bot.is_closed():
-            await bot.close()
+        try:
+            if not bot.is_closed():
+                await bot.close()
+        finally:
+            try:
+                await close_engine()
+            except Exception:
+                pass
